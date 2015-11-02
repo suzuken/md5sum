@@ -14,15 +14,16 @@ import (
 
 var ErrPathNotFound = errors.New("file or directory not found")
 
-// Pair is each line of md5sum
+// Pair is each line of md5sum.
 type Pair struct {
-	md5sum string // hex string of checksum
-	path   string // the name of original file
+	MD5sum string // hex string of checksum
+	Path   string // the name of original file
 }
 
-// Pairs are multiple
+// Pairs consists multiple pairs.
 type Pairs []*Pair
 
+// ChecksumGlob writes checksum to writer which selected by glob.
 func ChecksumGlob(pattern string, w io.Writer) error {
 	matches, err := filepath.Glob(pattern)
 	if err != nil {
@@ -51,24 +52,24 @@ func ChecksumFile(path string, w io.Writer) error {
 	return nil
 }
 
-// Calc creates pair of md5 checksum and its file path
+// Calc creates pair of md5 checksum and its file path.
 func Calc(path string) (*Pair, error) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 	return &Pair{
-		md5sum: fmt.Sprintf("%x", md5.Sum(b)),
-		path:   path,
+		MD5sum: fmt.Sprintf("%x", md5.Sum(b)),
+		Path:   path,
 	}, nil
 }
 
-// Encode encodes checksum into writer
+// Encode encodes checksum into writer.
 func WritePair(w io.Writer, pair *Pair) (n int, err error) {
-	return fmt.Fprintf(w, "%s  %s\n", pair.md5sum, pair.path)
+	return fmt.Fprintf(w, "%s  %s\n", pair.MD5sum, pair.Path)
 }
 
-// Decode decodes chechsum stream into field
+// Decode decodes chechsum stream into field.
 func Decode(r io.Reader) (Pairs, error) {
 	var pairs Pairs
 	s := bufio.NewScanner(r)
@@ -79,8 +80,8 @@ func Decode(r io.Reader) (Pairs, error) {
 			continue
 		}
 		pair := &Pair{
-			md5sum: ss[0],
-			path:   ss[1],
+			MD5sum: ss[0],
+			Path:   ss[1],
 		}
 		pairs = append(pairs, pair)
 	}
@@ -90,7 +91,7 @@ func Decode(r io.Reader) (Pairs, error) {
 	return pairs, nil
 }
 
-// Check verify if given file is match
+// Check verify if given file is match.
 func CheckGlob(pattern string, w io.Writer) (bool, error) {
 	matches, err := filepath.Glob(pattern)
 	if err != nil {
@@ -109,7 +110,7 @@ func CheckGlob(pattern string, w io.Writer) (bool, error) {
 	return true, nil
 }
 
-// ReadChecksumFile read checksum file and return pairs
+// ReadChecksumFile read checksum file and return pairs.
 func ReadChecksumFile(path string) (Pairs, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -118,7 +119,7 @@ func ReadChecksumFile(path string) (Pairs, error) {
 	return Decode(f)
 }
 
-// CheckFile receives md5sum file, and check each line
+// CheckFile receives md5sum file, and check each line.
 func CheckFile(checksumFilePath string) (bool, error) {
 	pairs, err := ReadChecksumFile(checksumFilePath)
 	if err != nil {
@@ -136,11 +137,11 @@ func CheckFile(checksumFilePath string) (bool, error) {
 func Check(pairs Pairs) (bool, error) {
 	for _, p := range pairs {
 		// read path, calculate md5, and test it
-		pair, err := Calc(p.path)
+		pair, err := Calc(p.Path)
 		if err != nil {
 			return false, err
 		}
-		if pair.md5sum != p.md5sum {
+		if pair.MD5sum != p.MD5sum {
 			return false, nil
 		}
 	}

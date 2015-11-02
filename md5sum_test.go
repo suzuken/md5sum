@@ -72,12 +72,12 @@ func TestDecode(t *testing.T) {
 	}
 
 	pair1 := &Pair{
-		md5sum: "d41d8cd98f00b204e9800998ecf8427e",
-		path:   "hoge",
+		MD5sum: "d41d8cd98f00b204e9800998ecf8427e",
+		Path:   "hoge",
 	}
 	pair2 := &Pair{
-		md5sum: "4af51d184c2507dd9fab8be3766168ac",
-		path:   "hoge.md5",
+		MD5sum: "4af51d184c2507dd9fab8be3766168ac",
+		Path:   "hoge.md5",
 	}
 	if !reflect.DeepEqual(pairs[0], pair1) {
 		t.Fatalf("field does not match: expected:%v actual: %v", pair1, pairs[0])
