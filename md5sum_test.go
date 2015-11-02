@@ -18,6 +18,7 @@ func TestChecksumGlob(t *testing.T) {
 	if err != nil {
 		t.Fatal("fail to create directory")
 	}
+	defer os.RemoveAll(tmpdir)
 	tmp1, err := ioutil.TempFile(tmpdir, "testing-md5sum")
 	if err != nil {
 		t.Fatal("fail to create file")
@@ -38,7 +39,6 @@ func TestChecksumGlob(t *testing.T) {
 	if string(r) != expected {
 		t.Fatalf("not match. expected: %s, actual %s\n", expected, r)
 	}
-	os.RemoveAll(tmpdir)
 }
 
 func TestChecksumFile(t *testing.T) {
@@ -47,6 +47,7 @@ func TestChecksumFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create file failed: %s", err)
 	}
+	defer os.Remove(tempfile.Name())
 	if err := ChecksumFile(tempfile.Name(), &buf); err != nil {
 		t.Fatalf("get checksum file failed: %s\n", err)
 	}
@@ -58,7 +59,6 @@ func TestChecksumFile(t *testing.T) {
 	if string(r) != expected {
 		t.Fatalf("not match. expected: %s, actual %s\n", expected, r)
 	}
-	os.Remove(tempfile.Name())
 }
 
 func TestDecode(t *testing.T) {
