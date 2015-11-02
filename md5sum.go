@@ -3,7 +3,6 @@ package md5sum
 import (
 	"bufio"
 	"crypto/md5"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,8 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 )
-
-var ErrPathNotFound = errors.New("file or directory not found")
 
 // Pair is each line of md5sum.
 type Pair struct {
@@ -30,7 +27,7 @@ func ChecksumGlob(pattern string, w io.Writer) error {
 		return err
 	}
 	if len(matches) == 0 {
-		return ErrPathNotFound
+		return fmt.Errorf("%s: file or directory not found", pattern)
 	}
 	for _, m := range matches {
 		if err := ChecksumFile(m, w); err != nil {
@@ -98,7 +95,7 @@ func CheckGlob(pattern string, w io.Writer) (bool, error) {
 		return false, err
 	}
 	if len(matches) == 0 {
-		return false, ErrPathNotFound
+		return false, fmt.Errorf("%s: file or directory not found", pattern)
 	}
 	for _, m := range matches {
 		if b, err := CheckFile(m); err != nil {
