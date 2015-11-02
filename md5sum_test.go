@@ -87,5 +87,25 @@ func TestDecode(t *testing.T) {
 	}
 }
 
-func TestCheckFile(t *testing.T) {
+func TestCheck(t *testing.T) {
+	var pairs Pairs
+	tempfile1, err := ioutil.TempFile(os.TempDir(), "testing-md5sum")
+	if err != nil {
+		t.Fatalf("create file failed: %s", err)
+	}
+	defer os.Remove(tempfile1.Name())
+	tempfile2, err := ioutil.TempFile(os.TempDir(), "testing-md5sum")
+	if err != nil {
+		t.Fatalf("create file failed: %s", err)
+	}
+	defer os.Remove(tempfile2.Name())
+	pairs = append(pairs, &Pair{MD5HEX_FOR_EMPTYFILE, tempfile1.Name()})
+	pairs = append(pairs, &Pair{MD5HEX_FOR_EMPTYFILE, tempfile2.Name()})
+	b, err := Check(pairs)
+	if err != nil {
+		t.Fatalf("check failed: %s", err)
+	}
+	if b != true {
+		t.Fatal("check does not pass.")
+	}
 }
